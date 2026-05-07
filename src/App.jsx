@@ -541,37 +541,107 @@ function AnalyzingScreen({ selectedRole }) {
 }
 
 // ── MAIN APP ─────────────────────────────────────────────────────────────────
-function MobileGate() {
+function MobileBanner() {
   return (
-    <div style={{ minHeight:"100vh", background:BG, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"40px 24px", fontFamily:"'Nunito',sans-serif", textAlign:"center" }}>
-      <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"5px", color:INK3, marginBottom:"4px" }}>THE CAREER CANTINA</div>
-      <div style={{ fontSize:"11px", color:INK3, marginBottom:"24px" }}>
-        by <a href="https://linkedin.com/in/wrainey" target="_blank" rel="noopener noreferrer" style={{ color:"#B86000", textDecoration:"none", fontWeight:"700" }}>Wayne Rainey</a>
+    <div style={{ background:"#1C1917", padding:"20px 24px", fontFamily:"'Nunito',sans-serif", textAlign:"center", borderBottom:"3px solid #B86000" }}>
+      <div style={{ fontSize:"28px", marginBottom:"10px" }}>💻</div>
+      <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"11px", fontWeight:"900", color:"white", marginBottom:"8px", letterSpacing:"1px" }}>
+        Desktop works best
       </div>
-      <div style={{ fontSize:"48px", marginBottom:"24px" }}>💻</div>
-      <h1 style={{ fontFamily:"'Orbitron',monospace", fontSize:"18px", fontWeight:"900", color:INK, margin:"0 0 20px", lineHeight:1.4 }}>
-        Desktop Required
-      </h1>
-      <p style={{ color:INK2, fontSize:"15px", lineHeight:1.9, maxWidth:"320px", margin:"0 0 28px" }}>
-        This tool analyzes your LinkedIn profile PDF — and LinkedIn only allows PDF downloads from a desktop browser.
+      <p style={{ color:"rgba(255,255,255,0.65)", fontSize:"12px", lineHeight:1.8, margin:"0 0 12px" }}>
+        LinkedIn only allows PDF downloads from a desktop browser. Get your PDF there, then come back here.
       </p>
-      <div style={{ background:SURFACE2, border:`1px solid ${BORDER}`, borderLeft:"3px solid #B86000", borderRadius:"8px", padding:"20px 22px", maxWidth:"320px", textAlign:"left", boxShadow:SHADOW }}>
-        <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"8px", letterSpacing:"2px", color:INK3, marginBottom:"12px" }}>HOW TO GET YOUR PDF</div>
-        <ol style={{ margin:0, padding:"0 0 0 18px", color:INK2, fontSize:"13px", lineHeight:2 }}>
+      <div style={{ background:"rgba(255,255,255,0.06)", borderRadius:"8px", padding:"12px 16px", textAlign:"left", marginBottom:"12px" }}>
+        <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"8px", letterSpacing:"2px", color:"rgba(255,255,255,0.4)", marginBottom:"8px" }}>HOW TO GET YOUR PDF</div>
+        <ol style={{ margin:0, padding:"0 0 0 16px", color:"rgba(255,255,255,0.7)", fontSize:"12px", lineHeight:2 }}>
           <li>Open LinkedIn on a desktop browser</li>
-          <li>Go to your profile page</li>
-          <li>Click <strong>More</strong> → <strong>Save to PDF</strong></li>
+          <li>Go to your profile → click <strong>More</strong> → <strong>Save to PDF</strong></li>
           <li>Come back here with that file</li>
         </ol>
       </div>
-      <p style={{ color:INK3, fontSize:"12px", marginTop:"28px", lineHeight:1.8 }}>
-        Already have your PDF saved on this device?<br/>
-        <span style={{ color:"#B86000", fontWeight:"700" }}>Scroll down to continue anyway.</span>
+      <p style={{ color:"rgba(255,184,0,0.8)", fontSize:"12px", marginBottom:"4px" }}>
+        Already have your PDF on this device? ↓ Scroll down to use the tool anyway
       </p>
-      <div style={{ marginTop:"12px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace" }}>v1.0.2</div>
     </div>
   );
 }
+
+// ── DEMO ANALYSIS — Jordan M. Calloway, Talent Acquisition Manager ──────────
+const DEMO_ANALYSIS = {
+  temperature: "hot",
+  temperature_score: 84,
+  primary_inference: "Talent Acquisition Manager",
+  secondary_inference: "HR Business Partner",
+  tertiary_inference: "Recruiting Operations Manager",
+  alignment_note: "Strong current-role vocabulary, proven metrics, and explicit TA leadership signal align cleanly with the Talent Acquisition Manager centroid.",
+  sections: [
+    {
+      name: "Headline",
+      content: "Talent Acquisition Manager | Full-Cycle Recruiting | Employer Branding | Workforce Planning",
+      hot_signals: [
+        { phrase: "Talent Acquisition Manager", cluster: "exact target role title match" },
+        { phrase: "Full-Cycle Recruiting", cluster: "core TA function vocabulary" },
+        { phrase: "Workforce Planning", cluster: "strategic TA capability signal" },
+      ],
+      cold_signals: [],
+    },
+    {
+      name: "About",
+      content: "Talent acquisition leader with 12 years of full-cycle recruiting experience across technology, SaaS, and enterprise software. I build and scale TA functions that hire with precision and speed...",
+      hot_signals: [
+        { phrase: "talent acquisition leader", cluster: "seniority + domain match" },
+        { phrase: "build and scale TA functions", cluster: "function ownership signal" },
+        { phrase: "data-driven recruiting metrics", cluster: "analytics capability in TA" },
+      ],
+      cold_signals: [
+        { phrase: "operational rigor and human judgment", cluster: "filler — vague values statement, no proof" },
+      ],
+    },
+    {
+      name: "Experience: Talent Acquisition Manager at Veridian Technologies",
+      content: "Lead a team of six recruiters supporting full-cycle talent acquisition across engineering, product, sales, and G&A. Reduced time-to-fill from 52 to 34 days. Offer acceptance rate improved from 71% to 88%.",
+      hot_signals: [
+        { phrase: "reduced time-to-fill from 52 to 34 days", cluster: "quantified TA efficiency proof" },
+        { phrase: "offer acceptance rate from 71% to 88%", cluster: "measurable recruiting outcome" },
+        { phrase: "Greenhouse ATS implementation", cluster: "named tool — TA tech stack signal" },
+      ],
+      cold_signals: [],
+    },
+    {
+      name: "Experience: Senior Technical Recruiter at Meridian Cloud Solutions",
+      content: "Full-cycle technical recruiting for SaaS product, engineering, and data science teams. Hired 90+ engineers, product managers, and data scientists across three years.",
+      hot_signals: [
+        { phrase: "full-cycle technical recruiting", cluster: "TA domain vocabulary" },
+        { phrase: "hired 90+ engineers", cluster: "volume proof in technical recruiting" },
+        { phrase: "talent mapping", cluster: "sourcing strategy signal" },
+      ],
+      cold_signals: [],
+    },
+    {
+      name: "Skills",
+      content: "Full-Cycle Recruiting · Talent Acquisition Strategy · Technical Recruiting · ATS Administration · LinkedIn Recruiter · Employer Branding · Diversity Recruiting · Workforce Planning",
+      hot_signals: [
+        { phrase: "Talent Acquisition Strategy", cluster: "strategic TA signal" },
+        { phrase: "ATS Administration", cluster: "TA tech operations" },
+        { phrase: "LinkedIn Recruiter", cluster: "named sourcing tool" },
+      ],
+      cold_signals: [],
+    },
+  ],
+  categorization: {
+    insight: "Signal is overwhelmingly concentrated in Talent Acquisition with minor bleed into HR generalist vocabulary — a clean, well-architected TA profile.",
+    towers: [
+      { signal: "TA Manager Title", height: 3, why: "Current title exact match to target role", transmits_to: [{ receiver:"primary", strength:0.92 }, { receiver:"secondary", strength:0.06 }, { receiver:"tertiary", strength:0.02 }] },
+      { signal: "Full-Cycle Recruiting", height: 3, why: "Core TA vocabulary repeated throughout", transmits_to: [{ receiver:"primary", strength:0.88 }, { receiver:"secondary", strength:0.08 }, { receiver:"tertiary", strength:0.04 }] },
+      { signal: "Quantified Outcomes", height: 3, why: "Time-to-fill and offer rate metrics", transmits_to: [{ receiver:"primary", strength:0.85 }, { receiver:"secondary", strength:0.1 }, { receiver:"tertiary", strength:0.05 }] },
+      { signal: "ATS & Tech Stack", height: 2, why: "Greenhouse, Lever, Workday named", transmits_to: [{ receiver:"primary", strength:0.80 }, { receiver:"secondary", strength:0.12 }, { receiver:"tertiary", strength:0.08 }] },
+      { signal: "Workforce Planning", height: 2, why: "Strategic TA signal beyond sourcing", transmits_to: [{ receiver:"primary", strength:0.75 }, { receiver:"secondary", strength:0.18 }, { receiver:"tertiary", strength:0.07 }] },
+      { signal: "Employer Branding", height: 2, why: "TA function ownership signal", transmits_to: [{ receiver:"primary", strength:0.78 }, { receiver:"secondary", strength:0.14 }, { receiver:"tertiary", strength:0.08 }] },
+      { signal: "Diversity Recruiting", height: 1, why: "Specialized TA capability signal", transmits_to: [{ receiver:"primary", strength:0.72 }, { receiver:"secondary", strength:0.2 }, { receiver:"tertiary", strength:0.08 }] },
+      { signal: "Recruiter Team Mgmt", height: 2, why: "People management elevates seniority read", transmits_to: [{ receiver:"primary", strength:0.70 }, { receiver:"secondary", strength:0.22 }, { receiver:"tertiary", strength:0.08 }] },
+    ],
+  },
+};
 
 export default function App() {
   const [stage,        setStage]       = useState("input");
@@ -762,11 +832,13 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
   };
 
   // ── INPUT ────────────────────────────────────────────────────────────────────
-  if (isMobile) return <MobileGate/>;
+  const showMobileBanner = isMobile && stage === "input";
 
   if (stage==="input") return (
-    <div style={{ minHeight:"100vh", background:BG, display:"flex", alignItems:"center", justifyContent:"center", padding:"40px 20px", fontFamily:"'Nunito',sans-serif" }}>
+    <div style={{ minHeight:"100vh", background:BG, fontFamily:"'Nunito',sans-serif" }}>
       <style>{`*{box-sizing:border-box}input::placeholder{color:${INK3}}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.12);border-radius:3px}`}</style>
+      {showMobileBanner && <MobileBanner/>}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:"40px 20px" }}>
       <div style={{ maxWidth:"500px", width:"100%" }}>
         <div style={{ textAlign:"center", marginBottom:"44px" }}>
           <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"5px", color:INK3, marginBottom:"6px" }}>THE CAREER CANTINA</div>
@@ -812,6 +884,15 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
         <button onClick={analyze} disabled={!selectedRole||!pdfBase64} style={{ width:"100%", padding:"15px", background:selectedRole&&pdfBase64?`linear-gradient(135deg,${TC.hot.color},${TC.warm.color})`:SURFACE, border:"none", borderRadius:"8px", color:selectedRole&&pdfBase64?"white":INK3, fontFamily:"'Orbitron',monospace", fontSize:"11px", letterSpacing:"3px", cursor:selectedRole&&pdfBase64?"pointer":"not-allowed", transition:"all 0.2s", fontWeight:"700", boxShadow:selectedRole&&pdfBase64?"0 4px 20px rgba(184,48,0,0.18)":"none" }}>
           ANALYZE PROFILE →
         </button>
+        <div style={{ textAlign:"center", marginTop:"20px" }}>
+          <button onClick={()=>{ setAnalysis(DEMO_ANALYSIS); setSelectedRole("Talent Acquisition Manager"); setStage("results"); setActiveTab("discovery"); }}
+            style={{ background:"transparent", border:`1px solid ${BORDER}`, borderRadius:"8px", padding:"10px 20px", color:INK3, fontFamily:"'Nunito',sans-serif", fontSize:"13px", cursor:"pointer", transition:"all 0.2s" }}
+            onMouseEnter={e=>e.currentTarget.style.borderColor=INK2}
+            onMouseLeave={e=>e.currentTarget.style.borderColor=BORDER}>
+            👀 See how it works — view a sample analysis
+          </button>
+        </div>
+      </div>
       </div>
     </div>
   );
@@ -830,6 +911,22 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
     return (
       <div style={{ minHeight:"100vh", background:BG, fontFamily:"'Nunito',sans-serif" }}>
         <style>{`*{box-sizing:border-box}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.1);border-radius:3px}@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+
+        {/* DEMO BANNER */}
+        {stage==="results" && !pdfBase64 && (
+          <div style={{ background:"#1C1917", padding:"14px 24px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"12px" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:"12px" }}>
+              <span style={{ fontSize:"16px" }}>👀</span>
+              <div>
+                <span style={{ color:"white", fontSize:"13px", fontWeight:"700" }}>Sample analysis — Jordan M. Calloway</span>
+                <span style={{ color:"rgba(255,255,255,0.5)", fontSize:"12px", marginLeft:"8px" }}>Talent Acquisition Manager · fictional profile</span>
+              </div>
+            </div>
+            <button onClick={reset} style={{ background:"#B86000", border:"none", borderRadius:"6px", padding:"8px 16px", color:"white", fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"2px", cursor:"pointer", whiteSpace:"nowrap" }}>
+              ANALYZE MY PROFILE →
+            </button>
+          </div>
+        )}
 
         {/* VERDICT HERO */}
         <div style={{ background:SURFACE, padding:"52px 40px 44px", textAlign:"center", borderBottom:`1px solid ${BORDER}` }}>
@@ -955,7 +1052,7 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
             style={{ background:"transparent", border:`1.5px solid ${BORDER}`, borderRadius:"8px", padding:"10px 28px", color:INK3, fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"3px", cursor:"pointer", transition:"all 0.2s" }}>
             ANALYZE ANOTHER PROFILE
           </button>
-          <div style={{ marginTop:"20px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace", letterSpacing:"1px" }}>v1.0.2</div>
+          <div style={{ marginTop:"20px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace", letterSpacing:"1px" }}>v1.0.3</div>
         </div>
       </div>
     );
