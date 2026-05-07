@@ -177,6 +177,26 @@ function CellTower({ color, height=2, isReceiver=false, animate=false }) {
 }
 
 // ── CATEGORIZATION VIZ ───────────────────────────────────────────────────────
+function getColumnInsight(key, pct, primaryPct) {
+  if (key === "primary") {
+    if (pct >= 80) return { label: "CLEAN SIGNAL", color: "#2E7D32", text: "Your signal is highly concentrated here. The system reads you confidently as this identity." };
+    if (pct >= 60) return { label: "STRONG SIGNAL", color: "#558B2F", text: "Solid primary signal. Some bleed into other identities but this dominates the read." };
+    return { label: "DILUTED SIGNAL", color: "#B86000", text: "Competing identities are drawing meaningful attention away from this primary read." };
+  }
+  if (key === "secondary") {
+    if (pct === 0) return { label: "NO COMPETING SIGNAL", color: "#6B6866", text: "Your profile isn't activating this identity at all — which keeps your primary signal cleaner." };
+    if (pct >= 20) return { label: "NOTABLE ALTERNATIVE", color: "#1A5AA0", text: "Significant signal here. This could be a genuine career alternative worth exploring — or a competing read to consciously manage." };
+    if (pct >= 10) return { label: "SECONDARY SIGNAL", color: "#1A5AA0", text: "Moderate presence. The system sees some evidence of this identity. Worth knowing even if you're not targeting it." };
+    return { label: "TRACE SIGNAL", color: "#6B6866", text: "Minimal presence. Unlikely to meaningfully affect how the system categorizes you." };
+  }
+  if (key === "tertiary") {
+    if (pct === 0) return { label: "NO SIGNAL", color: "#6B6866", text: "No vocabulary in your profile is pointing toward this identity. Clean." };
+    if (pct >= 15) return { label: "UNINTENDED SIGNAL", color: "#8B3A00", text: "Unexpected presence. Some of your language may be pulling categorization in this direction — worth reviewing if this isn't a role you're targeting." };
+    return { label: "TRACE SIGNAL", color: "#6B6866", text: "Very low presence. Likely not affecting your primary categorization significantly." };
+  }
+  return { label: "", color: INK3, text: "" };
+}
+
 function CategorizationViz({ analysis }) {
   const towers   = analysis.categorization?.towers   || [];
   const insight  = analysis.categorization?.insight  || "";
@@ -186,7 +206,6 @@ function CategorizationViz({ analysis }) {
   const [showBullets,  setShowBullets]  = useState(false);
   const [barWidths,    setBarWidths]    = useState({ primary:0, secondary:0, tertiary:0 });
 
-  // Assign each tower to dominant receiver
   const assigned = towers.map(t => {
     const dom = (t.transmits_to||[]).reduce((a,b) => (a.strength||0) > (b.strength||0) ? a : b, { receiver:"primary", strength:0 });
     return { ...t, column: dom.receiver, domStrength: dom.strength };
@@ -198,14 +217,12 @@ function CategorizationViz({ analysis }) {
     tertiary:  { label: analysis.tertiary_inference,   towers: assigned.filter(t=>t.column==="tertiary")  },
   };
 
-  // Weight = sum of heights in each column
   const weights = Object.fromEntries(
     Object.entries(columns).map(([k,c]) => [k, c.towers.reduce((s,t) => s+(t.height||1), 0)])
   );
   const totalWeight = Math.max(1, Object.values(weights).reduce((a,b) => a+b, 0));
   const pcts = Object.fromEntries(Object.entries(weights).map(([k,w]) => [k, Math.round(w/totalWeight*100)]));
 
-  // Dealing animation
   useEffect(() => {
     if (towers.length === 0) return;
     if (dealtCount < towers.length) {
@@ -220,35 +237,34 @@ function CategorizationViz({ analysis }) {
 
   useEffect(() => {
     if (!showPercent) return;
-    // Animate bar widths
     const t = setTimeout(() => setBarWidths(pcts), 80);
     const t2 = setTimeout(() => setShowBullets(true), 900);
     return () => { clearTimeout(t); clearTimeout(t2); };
   }, [showPercent]);
-
-  // Track which deal index each tower has
-  const dealIndex = {};
-  assigned.forEach((t,i) => { dealIndex[i] = i; });
 
   const COLKEYS = ["primary","secondary","tertiary"];
 
   return (
     <div style={{ padding:"24px 20px" }}>
       <style>{`
-        @keyframes dealIn {
-          from { opacity:0; transform:translateY(-24px) scale(0.85); }
-          to   { opacity:1; transform:translateY(0) scale(1); }
-        }
-        @keyframes fadeIn {
-          from { opacity:0; transform:translateY(8px); }
-          to   { opacity:1; transform:translateY(0); }
-        }
-        @keyframes barGrow { from { width:0; } }
+        @keyframes dealIn { from { opacity:0; transform:translateY(-24px) scale(0.85); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
       `}</style>
 
-      {/* Insight header */}
+      {/* Intro — explains what secondary/tertiary means */}
+      <div style={{ background:SURFACE2, border:`1px solid ${BORDER}`, borderRadius:"8px", padding:"18px 20px", marginBottom:"20px", boxShadow:SHADOW }}>
+        <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"8px", letterSpacing:"3px", color:INK3, marginBottom:"8px" }}>HOW TO READ THIS</div>
+        <p style={{ color:INK2, fontSize:"13px", lineHeight:1.9, margin:"0 0 10px" }}>
+          Every profile emits multiple signals at once whether you intend it or not. The system assigns your profile to a primary identity — but it also picks up secondary and tertiary reads from your vocabulary, titles, and experience patterns.
+        </p>
+        <p style={{ color:INK2, fontSize:"13px", lineHeight:1.9, margin:0 }}>
+          Some secondary signal is a <strong>welcome alternative</strong> — a role your background already supports that you may not have considered. Some is <strong>unintentional noise</strong> — language pulling categorization in a direction that competes with your primary goal. The columns below show you exactly what's there and what to make of it.
+        </p>
+      </div>
+
+      {/* Signal Read insight */}
       {insight && (
-        <div style={{ background:SURFACE2, border:`1px solid ${BORDER}`, borderLeft:"3px solid #B86000", borderRadius:"8px", padding:"14px 18px", marginBottom:"24px", boxShadow:SHADOW }}>
+        <div style={{ background:SURFACE2, border:`1px solid ${BORDER}`, borderLeft:"3px solid #B86000", borderRadius:"8px", padding:"14px 18px", marginBottom:"20px", boxShadow:SHADOW }}>
           <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"8px", letterSpacing:"3px", color:INK3, marginBottom:"6px" }}>SIGNAL READ</div>
           <p style={{ color:INK2, fontSize:"14px", lineHeight:1.85, margin:0, fontStyle:"italic" }}>{insight}</p>
         </div>
@@ -257,17 +273,25 @@ function CategorizationViz({ analysis }) {
       {/* Three columns */}
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"16px" }}>
         {COLKEYS.map(key => {
-          const col    = columns[key];
-          const color  = COL_COLORS[key];
-          const pct    = pcts[key] || 0;
-          const isSole = key === COLKEYS.reduce((a,b) => pcts[a]>pcts[b]?a:b);
+          const col      = columns[key];
+          const color    = COL_COLORS[key];
+          const pct      = pcts[key] || 0;
+          const isSole   = key === COLKEYS.reduce((a,b) => pcts[a]>pcts[b]?a:b);
+          const isEmpty  = col.towers.length === 0;
+          const colInsight = getColumnInsight(key, pct, pcts.primary);
 
           return (
-            <div key={key} style={{ background:SURFACE2, border:`1px solid ${BORDER}`, borderTop:`3px solid ${color}`, borderRadius:"10px", padding:"20px 16px", boxShadow:SHADOW, display:"flex", flexDirection:"column", gap:"16px" }}>
+            <div key={key} style={{
+              background:SURFACE2, border:`1px solid ${BORDER}`,
+              borderTop:`3px solid ${isEmpty ? "rgba(0,0,0,0.1)" : color}`,
+              borderRadius:"10px", padding:"20px 16px", boxShadow:SHADOW,
+              display:"flex", flexDirection:"column", gap:"14px",
+              opacity: isEmpty ? 0.75 : 1,
+            }}>
 
               {/* Column header */}
               <div>
-                <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"8px", letterSpacing:"2px", color, marginBottom:"4px" }}>
+                <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"8px", letterSpacing:"2px", color: isEmpty ? INK3 : color, marginBottom:"4px" }}>
                   {key.toUpperCase()}
                 </div>
                 <div style={{ fontFamily:"'Nunito',sans-serif", fontSize:"13px", fontWeight:"700", color:INK, lineHeight:1.35 }}>
@@ -277,24 +301,23 @@ function CategorizationViz({ analysis }) {
 
               {/* Receiver tower */}
               <div style={{ display:"flex", justifyContent:"center", paddingTop:"4px" }}>
-                <CellTower color={color} isReceiver={true}/>
+                <CellTower color={isEmpty ? "#C0B8B0" : color} isReceiver={true}/>
               </div>
 
-              {/* Signal towers dealt in */}
+              {/* Signal towers or empty state */}
               <div style={{ minHeight:"80px" }}>
-                <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"7px", letterSpacing:"2px", color:INK3, marginBottom:"10px" }}>
-                  ALIGNED SIGNALS
-                </div>
+                {!isEmpty && (
+                  <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"7px", letterSpacing:"2px", color:INK3, marginBottom:"10px" }}>
+                    ALIGNED SIGNALS
+                  </div>
+                )}
                 <div style={{ display:"flex", flexWrap:"wrap", gap:"10px", alignItems:"flex-end" }}>
                   {col.towers.map((tower, colIdx) => {
                     const globalIdx = assigned.indexOf(tower);
                     const isVisible = globalIdx < dealtCount;
                     if (!isVisible) return null;
                     return (
-                      <div key={colIdx} style={{
-                        display:"flex", flexDirection:"column", alignItems:"center", gap:"4px",
-                        animation:"dealIn 0.35s cubic-bezier(0.34,1.4,0.64,1) both",
-                      }}>
+                      <div key={colIdx} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"4px", animation:"dealIn 0.35s cubic-bezier(0.34,1.4,0.64,1) both" }}>
                         <CellTower color={color} height={tower.height||1}/>
                         <div style={{ fontSize:"9px", color:INK2, textAlign:"center", maxWidth:"56px", lineHeight:1.3, fontWeight:"600" }}>
                           {tower.signal}
@@ -302,9 +325,6 @@ function CategorizationViz({ analysis }) {
                       </div>
                     );
                   })}
-                  {col.towers.length === 0 && dealtCount >= towers.length && (
-                    <div style={{ color:INK3, fontSize:"11px", fontStyle:"italic", opacity:0.5 }}>No dominant signal</div>
-                  )}
                 </div>
               </div>
 
@@ -313,22 +333,28 @@ function CategorizationViz({ analysis }) {
                 <div style={{ animation:"fadeIn 0.5s ease both" }}>
                   <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"6px" }}>
                     <span style={{ fontFamily:"'Orbitron',monospace", fontSize:"8px", letterSpacing:"2px", color:INK3 }}>SIGNAL WEIGHT</span>
-                    <span style={{ fontFamily:"'Orbitron',monospace", fontSize:"11px", fontWeight:"700", color }}>
+                    <span style={{ fontFamily:"'Orbitron',monospace", fontSize:"11px", fontWeight:"700", color: isEmpty ? INK3 : color }}>
                       {pct}%
                     </span>
                   </div>
                   <div style={{ height:"8px", background:"rgba(0,0,0,0.06)", borderRadius:"4px", overflow:"hidden" }}>
-                    <div style={{
-                      height:"100%", background:color, borderRadius:"4px",
-                      width:`${barWidths[key]||0}%`,
-                      transition:"width 0.9s cubic-bezier(0.34,1.1,0.64,1)",
-                    }}/>
+                    <div style={{ height:"100%", background: isEmpty ? "rgba(0,0,0,0.08)" : color, borderRadius:"4px", width:`${barWidths[key]||0}%`, transition:"width 0.9s cubic-bezier(0.34,1.1,0.64,1)" }}/>
                   </div>
-                  {isSole && (
-                    <div style={{ marginTop:"6px", fontSize:"9px", color, fontFamily:"'Orbitron',monospace", letterSpacing:"1px" }}>
-                      ▲ DOMINANT IDENTITY
-                    </div>
+                  {isSole && !isEmpty && (
+                    <div style={{ marginTop:"6px", fontSize:"9px", color, fontFamily:"'Orbitron',monospace", letterSpacing:"1px" }}>▲ DOMINANT IDENTITY</div>
                   )}
+                </div>
+              )}
+
+              {/* Column insight — the "so what" */}
+              {showBullets && (
+                <div style={{ animation:"fadeIn 0.6s ease both", background: isEmpty ? "rgba(0,0,0,0.03)" : `${colInsight.color}10`, border:`1px solid ${colInsight.color}22`, borderRadius:"6px", padding:"10px 12px" }}>
+                  <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"8px", letterSpacing:"1.5px", color:colInsight.color, marginBottom:"5px", fontWeight:"700" }}>
+                    {colInsight.label}
+                  </div>
+                  <p style={{ color:INK2, fontSize:"11px", lineHeight:1.7, margin:0 }}>
+                    {colInsight.text}
+                  </p>
                 </div>
               )}
 
@@ -910,7 +936,7 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
     ];
     return (
       <div style={{ minHeight:"100vh", background:BG, fontFamily:"'Nunito',sans-serif" }}>
-        <style>{`*{box-sizing:border-box}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.1);border-radius:3px}@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+        <style>{`*{box-sizing:border-box}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.1);border-radius:3px}@keyframes spin{to{transform:rotate(360deg)}}@keyframes tabPulse{0%,100%{opacity:1;box-shadow:0 0 8px currentColor}50%{opacity:0.75;box-shadow:0 0 18px currentColor}}`}</style>
 
         {/* DEMO BANNER */}
         {stage==="results" && !pdfBase64 && (
@@ -952,6 +978,23 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
               </div>
             ))}
           </div>
+
+          {/* Context for secondary/tertiary */}
+          <div style={{ maxWidth:"580px", margin:"20px auto 0", background:SURFACE2, border:`1px solid ${BORDER}`, borderRadius:"8px", padding:"14px 20px", boxShadow:SHADOW }}>
+            <p style={{ color:INK2, fontSize:"13px", lineHeight:1.85, margin:"0 0 8px" }}>
+              <strong>Why these specific roles?</strong> Secondary and tertiary identities aren't recommendations — they're what the system already found in your profile. Your vocabulary, job titles, and experience patterns activate multiple role clusters simultaneously, whether you intend it or not.
+            </p>
+            {unlocked ? (
+              <p style={{ color:"#B83000", fontSize:"13px", lineHeight:1.85, margin:0, fontWeight:"600" }}>
+                Your score unlocked the Categorization tab ↓ — explore it to see exactly which signals are building each identity and what to do about them.
+              </p>
+            ) : (
+              <p style={{ color:INK3, fontSize:"13px", lineHeight:1.85, margin:0 }}>
+                Reach a score of 75 or higher to unlock the Categorization tab and see exactly which signals are building each identity.
+              </p>
+            )}
+          </div>
+
         </div>
 
         {/* TAB BAR */}
@@ -962,11 +1005,13 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
               <button key={tab.id} onClick={()=>handleTabClick(tab.id, analysis)}
                 onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="rgba(255,255,255,0.07)"; }}
                 onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="transparent"; }}
-                style={{ flex:1, padding:"18px 12px", background:isActive?cfg.color:"transparent", border:"none", color:isActive?"white":"rgba(255,255,255,0.72)", fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"2px", cursor:"pointer", transition:"all 0.2s", fontWeight:isActive?"700":"400", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", borderRight:`1px solid rgba(255,255,255,0.05)` }}>
+                style={{ flex:1, padding:"18px 12px", background:isActive?cfg.color:"transparent", border:"none", color:isActive?"white":"rgba(255,255,255,0.88)", fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"2px", cursor:"pointer", transition:"all 0.2s", fontWeight:isActive?"700":"400", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", borderRight:`1px solid rgba(255,255,255,0.05)` }}>
                 {tab.label}
-                {tab.locked && <span style={{ fontSize:"11px", opacity:0.5 }}>🔒</span>}
+                {tab.locked && <span style={{ fontSize:"11px", opacity:0.6 }}>🔒</span>}
                 {!tab.locked && tab.id==="categorization" && unlocked && (
-                  <span style={{ fontSize:"8px", background:"rgba(255,255,255,0.15)", padding:"1px 6px", borderRadius:"3px", letterSpacing:"0" }}>UNLOCKED</span>
+                  <span style={{ fontSize:"9px", background:cfg.color, color:"white", padding:"2px 8px", borderRadius:"4px", letterSpacing:"0.5px", fontWeight:"700", boxShadow:`0 0 10px ${cfg.color}80`, animation:"tabPulse 2s ease-in-out infinite" }}>
+                    ↓ UNLOCKED
+                  </span>
                 )}
               </button>
             );
@@ -1052,7 +1097,7 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
             style={{ background:"transparent", border:`1.5px solid ${BORDER}`, borderRadius:"8px", padding:"10px 28px", color:INK3, fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"3px", cursor:"pointer", transition:"all 0.2s" }}>
             ANALYZE ANOTHER PROFILE
           </button>
-          <div style={{ marginTop:"20px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace", letterSpacing:"1px" }}>v1.0.3</div>
+          <div style={{ marginTop:"20px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace", letterSpacing:"1px" }}>v1.0.5</div>
         </div>
       </div>
     );
