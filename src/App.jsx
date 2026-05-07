@@ -568,7 +568,7 @@ function MobileGate() {
         Already have your PDF saved on this device?<br/>
         <span style={{ color:"#B86000", fontWeight:"700" }}>Scroll down to continue anyway.</span>
       </p>
-      <div style={{ marginTop:"12px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace" }}>v1.0.0</div>
+      <div style={{ marginTop:"12px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace" }}>v1.0.1</div>
     </div>
   );
 }
@@ -667,7 +667,24 @@ KEEP CONCISE: section content max 300 chars. Signal phrases under 8 words. Clust
 
 Sections: Headline, About, each job as "Experience: [Title at Company]", Skills, Education.
 Max 3 hot_signals and 3 cold_signals per section. Empty array if none apply.
-Temperature: hot=75-100, warm=50-74, cool=25-49, cold=0-24.` }
+
+SCORING RULES — apply these strictly, in order:
+
+1. RECENCY FIRST: The current role (most recent) carries 3x the weight of any previous role. A profile whose current title and current role content do not match the target role CANNOT score above 72 regardless of historical signal strength.
+
+2. SIGNAL MASS vs SIGNAL RECENCY: Strong historical signal (5+ years ago) with weak or misaligned current signal is a warm profile at best. Do not let past depth compensate for present mismatch.
+
+3. TITLE ALIGNMENT: If the current job title does not contain vocabulary from the target role cluster, deduct 15 points before applying any other scoring.
+
+4. TRANSITION PENALTY: If the current role language points toward a different identity (advisory, consulting, board work, coaching) than the target role, apply a 10-20 point penalty reflecting categorical ambiguity.
+
+5. SCORE ANCHORS — use these as calibration:
+   - 85-100 (HOT): Current role title AND content densely match target role. Multiple recent roles reinforce the same identity. Certifications and skills section aligned. No competing clusters.
+   - 65-74 (WARM): Strong historical signal but current role is misaligned, transitional, or thin on target-role vocabulary. Profile is in flux.
+   - 45-64 (COOL): Scattered signal across multiple identities. Current role pointing away from target role. Historical signal relevant but not dominant.
+   - 0-44 (COLD): Insufficient signal for target role. Current role and history both pointing elsewhere.
+
+Temperature bands: hot=75-100, warm=50-74, cool=25-49, cold=0-24.` }
           ]}]
         })
       });
@@ -716,6 +733,7 @@ Assign each hot signal from this profile to the identity cluster it most strongl
 }
 
 height: 1=rare mention, 2=moderate presence, 3=strong repeated presence.
+IMPORTANT: Weight recent signals (current role, last 12 months) as height 3 regardless of word count. Weight signals from roles ended 2+ years ago as maximum height 2. A short current role with clear target-role vocabulary outweighs a long historical role with rich content.
 transmits_to: all three receivers, strengths must sum to 1.0.
 Max 8 towers. Omit towers where dominant strength < 0.15.` }
           ]}]
@@ -937,7 +955,7 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
             style={{ background:"transparent", border:`1.5px solid ${BORDER}`, borderRadius:"8px", padding:"10px 28px", color:INK3, fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"3px", cursor:"pointer", transition:"all 0.2s" }}>
             ANALYZE ANOTHER PROFILE
           </button>
-          <div style={{ marginTop:"20px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace", letterSpacing:"1px" }}>v1.0.0</div>
+          <div style={{ marginTop:"20px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace", letterSpacing:"1px" }}>v1.0.1</div>
         </div>
       </div>
     );
