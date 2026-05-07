@@ -94,6 +94,7 @@ The `netlify/functions/claude.js` function acts as a secure proxy. Your key live
 |---------|------|-------|
 | v1.0.0 | 2026-05-06 | Initial release |
 | v1.0.1 | 2026-05-06 | Scoring calibration — recency weighting, transition penalty, score anchors |
+| v1.0.2 | 2026-05-06 | UI legibility — tab bar contrast, gray text, GOOD TO KNOW copy fix |
 
 ---
 

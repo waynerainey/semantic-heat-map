@@ -32,7 +32,7 @@ const BORDER   = "rgba(0,0,0,0.08)";
 const SHADOW   = "0 1px 3px rgba(0,0,0,0.05),0 4px 12px rgba(0,0,0,0.04)";
 const INK      = "#1C1917";
 const INK2     = "#44403C";
-const INK3     = "#A8A29E";
+const INK3     = "#6B6866";
 
 const TC = {
   hot:  { label:"HOT",  color:"#B83000", border:"rgba(184,48,0,0.25)",  range:[75,100] },
@@ -469,7 +469,7 @@ function DCROTab() {
       </div>
       <div style={{ marginTop:"32px", padding:"20px", background:SURFACE, borderRadius:"8px", border:`1px solid ${BORDER}` }}>
         <div style={{ fontFamily:"'Orbitron',monospace", fontSize:"8px", letterSpacing:"2px", color:INK3, marginBottom:"8px" }}>GOOD TO KNOW</div>
-        <p style={{ color:INK2, fontSize:"12px", lineHeight:1.9, margin:0 }}>In reality, all four stages happen almost instantaneously — the system doesn't pause between them. This framework slows the process down deliberately, the same way a coach might use slow-motion video to show an athlete something that happens too fast to see in real time. The goal is clarity, not a literal description of how the code runs.</p>
+        <p style={{ color:INK2, fontSize:"12px", lineHeight:1.9, margin:0 }}>In reality, Discovery, Categorization, and Ranking happen in a single inference pass — the system doesn't pause between them. Output is different: it's the moment the result surfaces to a human, which happens after the machine process completes. This framework separates all four stages to make each mechanism visible and to show where your leverage actually lives.</p>
       </div>
     </div>
   );
@@ -568,7 +568,7 @@ function MobileGate() {
         Already have your PDF saved on this device?<br/>
         <span style={{ color:"#B86000", fontWeight:"700" }}>Scroll down to continue anyway.</span>
       </p>
-      <div style={{ marginTop:"12px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace" }}>v1.0.1</div>
+      <div style={{ marginTop:"12px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace" }}>v1.0.2</div>
     </div>
   );
 }
@@ -865,7 +865,7 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
               <button key={tab.id} onClick={()=>handleTabClick(tab.id, analysis)}
                 onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="rgba(255,255,255,0.07)"; }}
                 onMouseLeave={e=>{ if(!isActive) e.currentTarget.style.background="transparent"; }}
-                style={{ flex:1, padding:"18px 12px", background:isActive?cfg.color:"transparent", border:"none", color:isActive?"white":"rgba(255,255,255,0.45)", fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"2px", cursor:"pointer", transition:"all 0.2s", fontWeight:isActive?"700":"400", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", borderRight:`1px solid rgba(255,255,255,0.05)` }}>
+                style={{ flex:1, padding:"18px 12px", background:isActive?cfg.color:"transparent", border:"none", color:isActive?"white":"rgba(255,255,255,0.72)", fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"2px", cursor:"pointer", transition:"all 0.2s", fontWeight:isActive?"700":"400", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", borderRight:`1px solid rgba(255,255,255,0.05)` }}>
                 {tab.label}
                 {tab.locked && <span style={{ fontSize:"11px", opacity:0.5 }}>🔒</span>}
                 {!tab.locked && tab.id==="categorization" && unlocked && (
@@ -955,7 +955,7 @@ Max 8 towers. Omit towers where dominant strength < 0.15.` }
             style={{ background:"transparent", border:`1.5px solid ${BORDER}`, borderRadius:"8px", padding:"10px 28px", color:INK3, fontFamily:"'Orbitron',monospace", fontSize:"9px", letterSpacing:"3px", cursor:"pointer", transition:"all 0.2s" }}>
             ANALYZE ANOTHER PROFILE
           </button>
-          <div style={{ marginTop:"20px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace", letterSpacing:"1px" }}>v1.0.1</div>
+          <div style={{ marginTop:"20px", color:"rgba(0,0,0,0.12)", fontSize:"10px", fontFamily:"monospace", letterSpacing:"1px" }}>v1.0.2</div>
         </div>
       </div>
     );
